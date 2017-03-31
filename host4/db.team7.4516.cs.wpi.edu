@@ -1,0 +1,19 @@
+;
+; BIND data file for local loopback interface
+;
+$TTL	604800
+@	IN	SOA	ns1.team7.4516.cs.wpi.edu. admin.team7.4516.cs.wpi.edu (
+			      3		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+
+; name servers - ns1 Records
+	IN 	NS	ns1.team7.4516.cs.wpi.edu. 
+
+; name servers - A records
+ns1.team7.4516.cs.wpi.edu.	IN	A	10.45.7.4
+
+; name servers
+www.team7.4516.cs.wpi.edu.	IN	A	10.45.7.10

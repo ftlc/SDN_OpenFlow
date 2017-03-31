@@ -1,0 +1,50 @@
+auto lo
+
+iface lo inet loopback
+
+
+
+auto eth0
+iface eth0 inet manual
+	up ifconfig $IFACE 0.0.0.0 up
+
+
+
+auto br0
+iface br0 inet static
+      address 10.45.7.2
+      netmask 255.0.0.0
+      network 10.0.0.0
+      broadcast 10.255.255.255
+      bridge_ports eth0
+      bridge_fd 9
+      bridge_hello 2
+      bridge_maxage 12
+      bridge_stp off
+
+
+auto eth0:0
+iface eth0:0 inet static
+      address 10.45.7.34
+      netmask 255.255.255.224
+      broadcast 10.45.7.63
+      network 10.45.7.32
+
+
+auto eth0:1
+iface eth0:1 inet static
+      address 10.45.7.65
+      netmask 255.255.255.224
+      broadcast 10.45.7.95
+      network 10.45.7.64
+
+
+auto eth0:2
+iface eth0:2 inet static
+      address 10.45.7.97
+      netmask 255.255.255.224
+      broadcast 10.45.7.127
+      network 10.45.7.96
+
+
+

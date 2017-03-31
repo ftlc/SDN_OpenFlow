@@ -1,0 +1,14 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+//www.team7.4516.cs.wpi.edu. A 10.45.1.10
+
+zone "team7.4516.cs.wpi.edu" {
+	type master;
+	file "/etc/bind/zones/db.team7.4516.cs.wpi.edu"; 
+};
