@@ -3,6 +3,9 @@
 HOST=10.45.7.4
 
 
+scp ./misc/sshd_config cs4516@$HOST:~/
+ssh -t cs4516@$HOST "sudo mv ./sshd_config /etc/ssh/sshd_config"
+
 scp ./misc/nanorc root@$HOST:/etc/nanorc
 scp ./misc/sources.list root@$HOST:/etc/apt/sources.list
 ssh root@$HOST "apt-get update"
@@ -43,7 +46,7 @@ ssh root@$HOST "apt-get remove libpython-stdlib"
 ssh root@$HOST "apt-get install python"
 ssh root@$HOST "apt-get install python-dev"
 ssh root@$HOST "apt-get remove libpython-dev python2.7-dev"
-ssh root@$HOST "apt-get install libpython-dev" 
+ssh root@$HOST "apt-get install libpython-dev"
 ssh root@$HOST "apt-get install libpython2.7-dev"
 ssh root@$HOST "apt-get install libpython2.7"
 ssh root@$HOST "apt-get remove libpython2.7 libpython2.7-stdlib"
@@ -54,13 +57,13 @@ ssh root@$HOST "apt-get install libpython2.7-minimal"
 ssh root@$HOST "apt-get install libpython2.7-stdlib"
 ssh root@$HOST "apt-get install libpython2.7"
 ssh root@$HOST "apt-get install libpython-dev"
-ssh root@$HOST "apt-get install libpython2.7-dev" 
+ssh root@$HOST "apt-get install libpython2.7-dev"
 ssh root@$HOST "apt-get install libexpat1-dev"
 ssh root@$HOST "apt-get install libexpat1"
 ssh root@$HOST "apt-get remove libexpat1"
-ssh root@$HOST "apt-get update libexpat" 
-ssh root@$HOST "apt-get install libexpat1" 
-ssh root@$HOST "apt-get install libexpat1-dev" 
+ssh root@$HOST "apt-get update libexpat"
+ssh root@$HOST "apt-get install libexpat1"
+ssh root@$HOST "apt-get install libexpat1-dev"
 ssh root@$HOST "apt-get install libexpat1=2.1.0-4ubuntu1.3"
 ssh root@$HOST "apt-get install libexpat1-dev"
-ssh root@$HOST "apt-get install python-dev" 
+ssh root@$HOST "apt-get install python-dev"
