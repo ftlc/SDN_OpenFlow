@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 URL=$1
 FILE=$URL.csv
 printf "\"namelookup\",\"connect\",\"appconnect\",\"pretransfer\",\"redirect\",\"starttransfer\",\"total\"\n" >$FILE
