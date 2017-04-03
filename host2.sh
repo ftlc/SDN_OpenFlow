@@ -16,3 +16,11 @@ ssh root@$HOST "/etc/init.d/networking restart"
 
 
 ssh root@$HOST "apt-get install openvswitch-common openvswitch-switch bridge-utils"
+
+
+ssh root@$HOST "apt-get install lighttpd"
+scp ./misc/lighttpd.conf root@$HOST:/etc/lighttpd/lighttpd.conf
+ssh root@$HOST "/etc/init.d/lighttpd start"
+ssh root@$HOST "mkdir /var/www/"
+ssh root@$HOST "mkdir /var/www/html/"
+scp ./host2/index.lighttpd.html root@$HOST:/var/www/html/index.lighttpd.html
