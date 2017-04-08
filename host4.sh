@@ -20,6 +20,6 @@ ssh root@$HOST "/etc/init.d/networking restart"
 #sh ./misc/setup_dns.sh $HOST $HOSTNAME
 
 
-ssh root@$HOST "apt-get install python-dev ant maven build-essential"
+ssh root@$HOST "apt-get install python-dev ant maven build-essential openjdk-8-jdk unzip"
 
 
