@@ -10,6 +10,8 @@ scp ./host3/interfaces root@$HOST:/etc/network/interfaces
 
 ssh root@$HOST "/etc/init.d/networking restart"
 
+sh ./misc/setup_switch.sh $HOST
+
 #Setup Web Server
 sh ./misc/setup_server.sh $HOST $HOSTNAME
 

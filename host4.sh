@@ -13,11 +13,11 @@ ssh root@$HOST "/etc/init.d/networking restart"
 
 
 
-#Setup Server
-sh ./misc/setup_server.sh $HOST $HOSTNAME
+##Setup Server
+#sh ./misc/setup_server.sh $HOST $HOSTNAME
 
-#Setup DNS
-sh ./misc/setup_dns.sh $HOST $HOSTNAME
+##Setup DNS
+#sh ./misc/setup_dns.sh $HOST $HOSTNAME
 
 ssh root@$HOST "apt-get remove python"
 ssh root@$HOST "apt-get install python"
