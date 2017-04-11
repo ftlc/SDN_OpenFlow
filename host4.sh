@@ -7,7 +7,7 @@ HOSTNAME=host4
 sh ./shared.sh $HOST host4
 
 
-scp ./$HOSTNAME/interfaces root@$HOST:/etc/network/interfaces
+#scp ./$HOSTNAME/interfaces root@$HOST:/etc/network/interfaces
 
 ssh root@$HOST "/etc/init.d/networking restart"
 
