@@ -4,7 +4,7 @@ HOST=10.45.7.2
 HOSTNAME=host2
 
 #Perform shared updates
-sh ./shared.sh $HOST
+sh ./shared.sh $HOST host2
 
 #Move over the interfaces file and restart networking
 #scp ./host2/interfaces root@$HOST:/etc/network/interfaces

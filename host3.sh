@@ -4,7 +4,7 @@ HOST=10.45.7.3
 HOSTNAME=host3
 
 #Perform shared updates
-sh ./shared.sh $HOST
+sh ./shared.sh $HOST host3
 
 scp ./host3/interfaces root@$HOST:/etc/network/interfaces
 
