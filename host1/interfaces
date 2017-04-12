@@ -7,10 +7,4 @@ iface lo inet loopback
 
 auto eth0
 iface eth0 inet dhcp
-
-auto eth0:0
-iface eth0:0 inet static
-address 10.45.7.33
-netmask 255.255.255.224
-
-post-up route add -net 10.45.7.128 netmask 255.255.255.128 gw 10.45.7.34
+dns-nameservers 10.45.7.2
