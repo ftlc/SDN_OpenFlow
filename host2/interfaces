@@ -9,20 +9,4 @@ iface lo inet loopback
 auto eth0
 iface eth0 inet dhcp
 
-auto eth0:0
-iface eth0:0 inet static
-address 10.45.7.34
-netmask 255.255.255.224
-
-auto eth0:1
-iface eth0:1 inet static
-address 10.45.7.65
-netmask 255.255.255.224
-
-auto eth0:2
-iface eth0:2 inet static
-address 10.45.7.97
-netmask 255.255.255.224'
-
-
 
