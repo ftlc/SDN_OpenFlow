@@ -15,6 +15,8 @@ if [[ -z "$HN" ]]; then
 else
 	ssh root@$H "hostname $HN"
 	ssh root@$H "echo $HN > /etc/hostname"
+	scp $HN/hosts root@$H:/etc/hosts
+
 fi
 scp ./misc/nanorc root@$H:/etc/nanorc
 scp ./misc/sources.list root@$H:/etc/apt/sources.list
