@@ -1,3 +1,18 @@
+/* GAME PLAN
+	On init.
+	Clear current rules
+	add ***** * ** * * * * rule to just DEFAULT
+	add destip 10.45.7.128+ rule to DROP DAT SHIT
+	add srcip 10.45.7.2, UDP, port 53 to FORWARD TO FLOODLIGHT
+	Parse it in floodlight
+	IF srcip already has a capability, just increace the timeout and return the existing IP
+	If we need to add a capability, we add srcip SOMETHING destip 10.45.7.SOMETHING to DEFAULT
+	Add a java timer to timeout that rule
+
+*/
+
+
+
 package net.floodlightcontroller.cs4516;
 
 /**
@@ -12,6 +27,7 @@ import net.floodlightcontroller.packet.TCP;
 import org.projectfloodlight.openflow.protocol.OFMessage;
 import org.projectfloodlight.openflow.protocol.OFPacketOut;
 import org.projectfloodlight.openflow.protocol.OFType;
+import org.projectfloodlight.openflow.protocol.OFFactory;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
 import org.projectfloodlight.openflow.types.*;
 
@@ -19,6 +35,7 @@ import net.floodlightcontroller.core.module.FloodlightModuleContext;
 import net.floodlightcontroller.core.module.FloodlightModuleException;
 import net.floodlightcontroller.core.module.IFloodlightModule;
 import net.floodlightcontroller.core.module.IFloodlightService;
+
 
 
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -92,6 +109,18 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         ipTable.put(IPv4Address.of("10.45.7.65"), MacAddress.of("52:54:00:45:16:1A"));
         ipTable.put(IPv4Address.of("10.45.7.97"), MacAddress.of("52:54:00:45:16:1A"));
         floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
+
+
+	OFFactory myFactory = floodlightProvider.getOFFactory();
+	Match myMatch = myFactory.buildMatch()
+    .setExact(MatchField.IN_PORT, OFPort.of(1))
+    .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+    .setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
+    .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
+    .setExact(MatchField.TCP_DST, TransportPort.of(80))
+    .build();
+
+
 
         logger = LoggerFactory.getLogger(CS4516.class);
     }
