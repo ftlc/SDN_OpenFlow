@@ -135,15 +135,37 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     .build();
 
 
+
+
+
         ArrayList<OFAction> list1 = new ArrayList<OFAction>();
         list1.add(myActions.output(OFPort.NORMAL, 0));
 
-        OFFlowAdd flowAdd = myFactory.buildFlowAdd()
+        OFFlowAdd flow1 = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
                 .setActions(list1)
                 .build();
 
-        return false;
+        sw.write(flow1);
+
+                Match myMatch2 = myFactory.buildMatch()
+
+                //.setExact(MatchField.IN_PORT, OFPort.of(1))
+            .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+    //.setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
+    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+    .setExact(MatchField.UDP_DST, TransportPort.of(53))
+                        .setExact(MatchField.IPV4_SRC, IPv4Address.of("10.45.7.2"))
+    .build();
+        ArrayList<OFAction> list2 = new ArrayList<OFAction>();
+        list2.add(myActions.output(OFPort.CONTROLLER, 0));
+        OFFlowAdd flow2 = myFactory.buildFlowAdd()
+                .setMatch(myMatch2)
+                .setActions(list2)
+                .build();
+        sw.write(flow2);
+
+        return true;
     }
 
     @Override
