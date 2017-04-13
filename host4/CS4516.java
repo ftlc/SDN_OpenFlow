@@ -24,11 +24,14 @@ import java.util.*;
 import net.floodlightcontroller.core.*;
 import net.floodlightcontroller.packet.IPv4;
 import net.floodlightcontroller.packet.TCP;
-import org.projectfloodlight.openflow.protocol.OFMessage;
-import org.projectfloodlight.openflow.protocol.OFPacketOut;
-import org.projectfloodlight.openflow.protocol.OFType;
-import org.projectfloodlight.openflow.protocol.OFFactory;
+import org.projectfloodlight.openflow.protocol.*;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
+import org.projectfloodlight.openflow.protocol.action.OFActions;
+import org.projectfloodlight.openflow.protocol.actionid.OFActionIdPushMpls;
+import org.projectfloodlight.openflow.protocol.instruction.OFInstruction;
+import org.projectfloodlight.openflow.protocol.instruction.OFInstructions;
+import org.projectfloodlight.openflow.protocol.match.Match;
+import org.projectfloodlight.openflow.protocol.match.MatchField;
 import org.projectfloodlight.openflow.types.*;
 
 import net.floodlightcontroller.core.module.FloodlightModuleContext;
@@ -50,8 +53,16 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     protected final MacAddress SWITCH_MAC = MacAddress.of("52:54:00:45:16:1A");
     protected IFloodlightProviderService floodlightProvider;
     protected static Logger logger;
-    protected HashMap<IPv4Address, MacAddress> ipTable;
-    protected static HashMap<String , Long> validConnections;
+
+
+
+    OFFactory myFactory = null;
+    OFActions myActions = null;
+    OFInstructions myInstructions = null;
+
+    boolean hasrec = false;
+
+
 
     @Override
     public String getName() {
@@ -93,32 +104,9 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     @Override
     public void init(FloodlightModuleContext context)
             throws FloodlightModuleException {
-        validConnections = new HashMap<>();
-	validConnections.put("10.45.7.1:10.45.7.128" , System.currentTimeMillis() + 60000);
-        ipTable = new HashMap<>();
-        ipTable.put(IPv4Address.of("10.45.7.1"), MacAddress.of("52:54:00:45:16:19"));
-        ipTable.put(IPv4Address.of("10.45.7.2"), MacAddress.of("52:54:00:45:16:1A"));
-        ipTable.put(IPv4Address.of("10.45.7.3"), MacAddress.of("52:54:00:45:16:1B"));
-        ipTable.put(IPv4Address.of("10.45.7.4"), MacAddress.of("52:54:00:45:16:1C"));
-
-        //Host 2 Aliases
-	for(int i = 128 ; i < 255 ; i++) {
-		ipTable.put(IPv4Address.of("10.45.7." + i) , MacAddress.of("52:54:00:45:16:1B"));
-	}
-        ipTable.put(IPv4Address.of("10.45.7.34"), MacAddress.of("52:54:00:45:16:1A"));
-        ipTable.put(IPv4Address.of("10.45.7.65"), MacAddress.of("52:54:00:45:16:1A"));
-        ipTable.put(IPv4Address.of("10.45.7.97"), MacAddress.of("52:54:00:45:16:1A"));
-        floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 
 
-	OFFactory myFactory = floodlightProvider.getOFFactory();
-	Match myMatch = myFactory.buildMatch()
-    .setExact(MatchField.IN_PORT, OFPort.of(1))
-    .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-    .setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
-    .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
-    .setExact(MatchField.TCP_DST, TransportPort.of(80))
-    .build();
+
 
 
 
@@ -132,10 +120,39 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
 	//Hi mom its me
 
+    public boolean ruleinit(IOFSwitch sw, FloodlightContext cntx){
+        myFactory = sw.getOFFactory();
+        if(myFactory == null) return false;
+        myActions = myFactory.actions();
+        myInstructions = myFactory.instructions();
+        Match myMatch = myFactory.buildMatch()
+
+                //.setExact(MatchField.IN_PORT, OFPort.of(1))
+            //.setExact(MatchField.ETH_TYPE, EthType.IPv4)
+    //.setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
+    //.setExact(MatchField.IP_PROTO, IpProtocol.TCP)
+    //.setExact(MatchField.TCP_DST, TransportPort.of(80))
+    .build();
+
+
+        ArrayList<OFAction> list1 = new ArrayList<OFAction>();
+        list1.add(myActions.output(OFPort.NORMAL, 0));
+
+        OFFlowAdd flowAdd = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list1)
+                .build();
+
+        return false;
+    }
+
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
         if(msg.getType() == OFType.PACKET_IN) {
+
+            if(!hasrec)
+                hasrec = ruleinit(sw, cntx);
             Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 
             MacAddress srcMac = eth.getSourceMACAddress();
@@ -151,7 +168,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
             System.out.println("Source IP: " +  srcIP.toString());
             System.out.println("Dest IP: " +  dstIP.toString());
-
+/*
             String key = srcIP.toString() + ":" + dstIP.toString();
             if ((dstIP.getInt() & 255) > 127) {
 		System.out.printf("got packet in range %s wlll\n", key);
@@ -180,7 +197,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
             		}
 
             		byte[] serializedData = eth.serialize();
-            		OFPacketOut po = sw.getOFFactory().buildPacketOut() /* mySwitch is some IOFSwitch object */
+            		OFPacketOut po = sw.getOFFactory().buildPacketOut() //mySwitch is some IOFSwitch object
                     		.setData(serializedData)
                     		.setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.NORMAL, 1)))
                     		.setInPort(OFPort.CONTROLLER)
@@ -190,7 +207,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
             }
 
-
+*/
         }
 
 
