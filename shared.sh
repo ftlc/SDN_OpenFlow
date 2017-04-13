@@ -18,6 +18,7 @@ else
 ##	scp $HN/hosts root@$H:/etc/hosts
 	echo fuuuug
 fi
+scp ./misc/tmux.conf root@$H:/etc/tmux.conf
 scp ./misc/nanorc root@$H:/etc/nanorc
 scp ./misc/sources.list root@$H:/etc/apt/sources.list
 ssh root@$H "apt-get update && apt-get upgrade"
