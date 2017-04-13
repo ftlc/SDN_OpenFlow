@@ -13,10 +13,10 @@ echo big
 if [[ -z "$HN" ]]; then
 	echo "You forgot a hostname!"
 else
-	ssh root@$H "hostname $HN"
-	ssh root@$H "echo $HN > /etc/hostname"
-	scp $HN/hosts root@$H:/etc/hosts
-
+##	ssh root@$H "hostname $HN"
+##	ssh root@$H "echo $HN > /etc/hostname"
+##	scp $HN/hosts root@$H:/etc/hosts
+	echo fuuuug
 fi
 scp ./misc/nanorc root@$H:/etc/nanorc
 scp ./misc/sources.list root@$H:/etc/apt/sources.list

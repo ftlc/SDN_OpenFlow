@@ -105,11 +105,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     public void init(FloodlightModuleContext context)
             throws FloodlightModuleException {
 
-
-
-
-
-
+	floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
+//	System.out.printf("Got dat BIZZIE \n\n\n\n\n\n\n BIZZZIE \n\nb\n\n\n\n\n\n");
         logger = LoggerFactory.getLogger(CS4516.class);
     }
 
@@ -139,29 +136,31 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
 
         ArrayList<OFAction> list1 = new ArrayList<OFAction>();
-        list1.add(myActions.output(OFPort.NORMAL, 0));
+        list1.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
 
         OFFlowAdd flow1 = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
                 .setActions(list1)
+		.setPriority(1)
                 .build();
 
-        sw.write(flow1);
+//        sw.write(flow1);
 
                 Match myMatch2 = myFactory.buildMatch()
 
                 //.setExact(MatchField.IN_PORT, OFPort.of(1))
             .setExact(MatchField.ETH_TYPE, EthType.IPv4)
     //.setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
-    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
-    .setExact(MatchField.UDP_DST, TransportPort.of(53))
-                        .setExact(MatchField.IPV4_SRC, IPv4Address.of("10.45.7.2"))
+    //.setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+    //.setExact(MatchField.UDP_DST, TransportPort.of(53))
+    .setExact(MatchField.IPV4_SRC, IPv4Address.of("10.45.7.2"))
     .build();
         ArrayList<OFAction> list2 = new ArrayList<OFAction>();
-        list2.add(myActions.output(OFPort.CONTROLLER, 0));
+        list2.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
         OFFlowAdd flow2 = myFactory.buildFlowAdd()
                 .setMatch(myMatch2)
                 .setActions(list2)
+		.setPriority(2)
                 .build();
         sw.write(flow2);
 
@@ -171,6 +170,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
+	System.out.printf("Got dat shit\n");
         if(msg.getType() == OFType.PACKET_IN) {
 
             if(!hasrec)
@@ -187,6 +187,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
             IPv4 ipv4 = (IPv4) eth.getPayload();
             IPv4Address srcIP = ipv4.getSourceAddress();
             IPv4Address dstIP = ipv4.getDestinationAddress();
+
+	if(ipv4.getProtocol() == IpProtocol.UDP)System.out.printf("HOLY BAL:LS BATNAM\n");
 
             System.out.println("Source IP: " +  srcIP.toString());
             System.out.println("Dest IP: " +  dstIP.toString());
