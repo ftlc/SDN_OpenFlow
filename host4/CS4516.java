@@ -21,6 +21,7 @@ package net.floodlightcontroller.cs4516;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.*;
 
 import net.floodlightcontroller.core.*;
@@ -144,15 +145,15 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         OFFlowAdd flow1 = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
                 .setActions(list1)
-//		.setPriority(1)
+        		.setPriority(1)
                 .build();
 
         sw.write(flow1);
 
                 Match myMatch2 = myFactory.buildMatch()
             .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-//    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
-//    .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+    .setExact(MatchField.UDP_SRC, TransportPort.of(53))
     .setExact(MatchField.IPV4_SRC, IPv4Address.of("10.45.7.2"))
     .build();
         ArrayList<OFAction> list2 = new ArrayList<OFAction>();
@@ -160,6 +161,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         OFFlowAdd flow2 = myFactory.buildFlowAdd()
                 .setMatch(myMatch2)
                 .setActions(list2)
+                .setPriority(2)
                 .build();
         sw.write(flow2);
 
@@ -173,7 +175,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         OFFlowAdd flow3 = myFactory.buildFlowAdd()
                 .setMatch(myMatch3)
                 .setActions(list3)
-//		.setPriority(2)
+		        .setPriority(3)
                 .build();
         sw.write(flow3);
 
@@ -186,6 +188,33 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         for(i = 0; i < in.length && j < pattern.length; i++)
             for(j = 0; j < pattern.length && in[i+j] == pattern[j]; j++);
         return j == pattern.length ? i : -1;
+    }
+
+
+    public int getTTL(byte[] data){
+            int numq = (data[4]&0xFF) * 256 + (data[5]&0xFF); //big endian
+
+            int pos = 12;
+            //find the nully, end of the rule name
+            int i;
+            for(i = 0; i < numq; i++){
+                //alright we are at the start of a response (hopefully)
+                //find the end of the string
+                for(; data[pos] != 0x00 ; pos++);
+                pos+=4; //last 4 bytes
+            }
+
+            //alright we are at the start of a response (hopefully)
+            //find the end of the string
+            for(; data[pos] != 0x00 ; pos++);
+            pos+=4; //last 4 bytes
+
+        //WE ARE AT THE TTL BOOOYS
+        int ttl = data[pos];
+        byte[] thettl= {data[pos], data[pos+1], data[pos+2], data[pos+3]};
+        ByteBuffer buffer = ByteBuffer.wrap(thettl);
+        buffer.order(ByteOrder.BIG_ENDIAN);
+        return buffer.getInt();
     }
 
     public byte[] IPtoByte(String str) {
@@ -208,7 +237,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
-//	System.out.printf("Got dat shit\n");
+//	System.out.printf("Got dat\n");
         if(msg.getType() == OFType.PACKET_IN) {
 
             if(!hasrec)
@@ -226,15 +255,18 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
             IPv4Address srcIP = ipv4.getSourceAddress();
             IPv4Address dstIP = ipv4.getDestinationAddress();
 
-            System.out.println("Packet type: " +ipv4.getPayload().toString());
+            //System.out.println("Packet type: " +ipv4.getPayload().toString());
             if(!ipv4.getProtocol().equals(IpProtocol.UDP)) return Command.CONTINUE;
-            System.out.printf("We got a dns packet?\n");
+
+
             System.out.println("Source IP: " +  srcIP.toString() + "Source mac: " + srcMac);
             System.out.println("Dest IP: " +  dstIP.toString() + "Dest mac: " + dstMac);
 
             UDP p = (UDP) ipv4.getPayload();
-            System.out.println("Source port: " + p.getSourcePort());
-            System.out.println("Dest port: " + p.getDestinationPort());
+            if(!p.getSourcePort().equals(TransportPort.of(53))) return Command.CONTINUE;
+            System.out.printf("We got a dns packet?\n");
+            //System.out.println("Source port: " + p.getSourcePort());
+            //System.out.println("Dest port: " + p.getDestinationPort());
 
 
             //assume we are at DNS now
@@ -242,20 +274,28 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
             byte[] data = p.serialize();
 
 
-            System.out.println("Address "+srcIP +" was at " + indexOf(data, srcIP.getBytes()));
 
 
             robin++;
-            if(robin > 254 || robin < 128) robin =128;
+            if(robin > 254 || robin < 129) robin =129;
             IPv4Address newsc = dstIP;
             IPv4Address newds = IPv4Address.of("10.45.7." + robin);
 
-            byte[] newIP = IPtoByte("10.45.7.3");
+            byte[] newIP = IPtoByte("10.45.7." + robin);
+            byte[] oldIP = IPtoByte("10.45.7.3");
             //assume we can parse it
-            if(indexOf(data, newIP) != -1 ){
+            int index = indexOf(data, oldIP);
 
-            }
+            System.out.println("Address "+srcIP +" was at " + index);
+            if(index == -1 ) return Command.CONTINUE;
             //assume we can edit it
+            data[index] = newIP[0];
+            data[index] = newIP[1];
+            data[index] = newIP[2];
+            data[index] = newIP[3];
+
+            //get the ttl
+            int thettl = getTTL(data);
 
             //add new flow to table
 
@@ -264,71 +304,19 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
             Match myMatch = myFactory.buildMatch()
                     .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-                    //.setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
-//    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
-//    .setExact(MatchField.UDP_SRC, TransportPort.of(53))
                     .setExact(MatchField.IPV4_SRC, newsc)
-                    //Send
-
                     .setExact(MatchField.IPV4_DST, newds)
                     .build();
             ArrayList<OFAction> list = new ArrayList<OFAction>();
-//        list.add(myActions.setDlSrc(MacAddress.of("DE:AD:BE:EF:CA:FE")
             list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
             OFFlowAdd flow = myFactory.buildFlowAdd()
                     .setMatch(myMatch)
                     .setActions(list)
-                    .setHardTimeout(10000) //todo less or something idk
-//		.setPriority(2)
+                    .setHardTimeout(thettl)
+            		.setPriority(5)
                     .build();
             sw.write(flow);
-
-
-
-
-/*
-            String key = srcIP.toString() + ":" + dstIP.toString();
-            if ((dstIP.getInt() & 255) > 127) {
-		System.out.printf("got packet in range %s wlll\n", key);
-                Long timeout = validConnections.get(key);
-                if(timeout == null){
-			System.out.printf("Dropped packet key %s, no rule\n", key);
-			return null; //DROP TOP POP
-		}
-                else if( System.currentTimeMillis() > timeout) {
-			System.out.printf("Dropped packet key %s, timeout fucked\n", key);
-                    validConnections.remove(key);
-                    return null; //DROP THE PACKET
-                }
-
-
-            		System.out.println("Source MAC: " +  srcMac.toString());
-            		System.out.println("Dest MAC: " +  dstMac.toString());
-            		dstMac = ipTable.get(dstIP);
-            		srcMac = SWITCH_MAC;
-
-            		//System.out.println("TCP Payload: " + tcp.toString());
-
-            		System.out.println("New Source MAC: " +  srcMac.toString());
-            		if(!dstMac.equals(null)){
-                		System.out.println("New Dest MAC: " +  dstMac.toString());
-            		}
-
-            		byte[] serializedData = eth.serialize();
-            		OFPacketOut po = sw.getOFFactory().buildPacketOut() //mySwitch is some IOFSwitch object
-                    		.setData(serializedData)
-                    		.setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.NORMAL, 1)))
-                    		.setInPort(OFPort.CONTROLLER)
-                    		.build();
-
-            		sw.write(po);
-
-            }
-
-*/
         }
-
-
         return Command.CONTINUE;
     }
 
