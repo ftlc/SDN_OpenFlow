@@ -19,6 +19,8 @@ package net.floodlightcontroller.cs4516;
  * Created by ftlc on 4/2/17.
  */
 
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 import net.floodlightcontroller.core.*;
@@ -41,6 +43,7 @@ import net.floodlightcontroller.core.module.IFloodlightService;
 
 
 import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.regex.Pattern;
 
 import net.floodlightcontroller.packet.Ethernet;
 import org.slf4j.Logger;
@@ -178,13 +181,30 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         return true;
     }
 
-public int indexOf(byte[] in, byte[] pattern){
-	int i =0, j=0;
-	for(i = 0; i < in.length && j < pattern.length; i++)
-		for(j = 0; j < pattern.length && in[i+j] == pattern[j]; j++);
-	return j == pattern.length ? i : -1;
-}
+    public int indexOf(byte[] in, byte[] pattern){
+        int i =0, j=0;
+        for(i = 0; i < in.length && j < pattern.length; i++)
+            for(j = 0; j < pattern.length && in[i+j] == pattern[j]; j++);
+        return j == pattern.length ? i : -1;
+    }
 
+    public byte[] IPtoByte(String str) {
+
+        InetAddress ip = null;
+        try {
+            ip = InetAddress.getByName(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        byte[] bytes = ip.getAddress();
+        for (byte b : bytes) {
+            System.out.println(Integer.toHexString(b));
+        }
+        return bytes;
+
+
+    }
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
 
@@ -206,58 +226,62 @@ public int indexOf(byte[] in, byte[] pattern){
             IPv4Address srcIP = ipv4.getSourceAddress();
             IPv4Address dstIP = ipv4.getDestinationAddress();
 
-	System.out.println("Packet type: " +ipv4.getPayload().toString());
-	if(!ipv4.getProtocol().equals(IpProtocol.UDP)) return Command.CONTINUE;
-	System.out.printf("We got a dns packet?\n");
-        System.out.println("Source IP: " +  srcIP.toString() + "Source mac: " + srcMac);
-	System.out.println("Dest IP: " +  dstIP.toString() + "Dest mac: " + dstMac);
+            System.out.println("Packet type: " +ipv4.getPayload().toString());
+            if(!ipv4.getProtocol().equals(IpProtocol.UDP)) return Command.CONTINUE;
+            System.out.printf("We got a dns packet?\n");
+            System.out.println("Source IP: " +  srcIP.toString() + "Source mac: " + srcMac);
+            System.out.println("Dest IP: " +  dstIP.toString() + "Dest mac: " + dstMac);
 
-	UDP p = (UDP) ipv4.getPayload();
-	System.out.println("Source port: " + p.getSourcePort());
-	System.out.println("Dest port: " + p.getDestinationPort());
-
-
-	//assume we are at DNS now
-
-	byte[] data = p.serialize();
+            UDP p = (UDP) ipv4.getPayload();
+            System.out.println("Source port: " + p.getSourcePort());
+            System.out.println("Dest port: " + p.getDestinationPort());
 
 
-	System.out.println("Address "+srcIP +" was at " + indexOf(data, srcIP.getBytes()));
+            //assume we are at DNS now
+
+            byte[] data = p.serialize();
 
 
-	robin++;
-	if(robin > 254 || robin < 128) robin =128;
-	IPv4Address newsc = dstIP;
-	IPv4Address newds = IPv4Address.of("10.45.7." + robin);
-
-	//assume we can parse it
-	//assume we can edit it
-
-	//add new flow to table
+            System.out.println("Address "+srcIP +" was at " + indexOf(data, srcIP.getBytes()));
 
 
+            robin++;
+            if(robin > 254 || robin < 128) robin =128;
+            IPv4Address newsc = dstIP;
+            IPv4Address newds = IPv4Address.of("10.45.7." + robin);
+
+            byte[] newIP = IPtoByte("10.45.7.3");
+            //assume we can parse it
+            if(indexOf(data, newIP) != -1 ){
+
+            }
+            //assume we can edit it
+
+            //add new flow to table
 
 
-	Match myMatch = myFactory.buildMatch()
-            .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-   //.setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
+
+
+            Match myMatch = myFactory.buildMatch()
+                    .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                    //.setMasked(MatchField.IPV4_SRC, IPv4AddressWithMask.of("192.168.0.1/24"))
 //    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
 //    .setExact(MatchField.UDP_SRC, TransportPort.of(53))
-    .setExact(MatchField.IPV4_SRC, newsc)
-				  //Send
+                    .setExact(MatchField.IPV4_SRC, newsc)
+                    //Send
 
-    .setExact(MatchField.IPV4_DST, newds)
-    .build();
-        ArrayList<OFAction> list = new ArrayList<OFAction>();
+                    .setExact(MatchField.IPV4_DST, newds)
+                    .build();
+            ArrayList<OFAction> list = new ArrayList<OFAction>();
 //        list.add(myActions.setDlSrc(MacAddress.of("DE:AD:BE:EF:CA:FE")
-        list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
-        OFFlowAdd flow = myFactory.buildFlowAdd()
-                .setMatch(myMatch)
-                .setActions(list)
-		.setHardTimeout(10000) //todo less or something idk
+            list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
+            OFFlowAdd flow = myFactory.buildFlowAdd()
+                    .setMatch(myMatch)
+                    .setActions(list)
+                    .setHardTimeout(10000) //todo less or something idk
 //		.setPriority(2)
-                .build();
-        sw.write(flow);
+                    .build();
+            sw.write(flow);
 
 
 
