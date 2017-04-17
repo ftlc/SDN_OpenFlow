@@ -187,7 +187,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         int i =0, j=0;
         for(i = 0; i < in.length && j < pattern.length; i++)
             for(j = 0; j < pattern.length && in[i+j] == pattern[j]; j++);
-        return j == pattern.length ? i : -1;
+
+        return j == pattern.length ? (i-1) : -1;
     }
 
 
@@ -228,7 +229,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         }
         byte[] bytes = ip.getAddress();
         for (byte b : bytes) {
-            System.out.println(Integer.toHexString(b));
+            System.out.println(Integer.toString(b));
         }
         return bytes;
 
