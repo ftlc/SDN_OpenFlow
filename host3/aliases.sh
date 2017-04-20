@@ -1,127 +1,127 @@
-ifconfig eth0:10.45.7.128 up
-ifconfig eth0:10.45.7.129 up
-ifconfig eth0:10.45.7.130 up
-ifconfig eth0:10.45.7.131 up
-ifconfig eth0:10.45.7.132 up
-ifconfig eth0:10.45.7.133 up
-ifconfig eth0:10.45.7.134 up
-ifconfig eth0:10.45.7.135 up
-ifconfig eth0:10.45.7.136 up
-ifconfig eth0:10.45.7.137 up
-ifconfig eth0:10.45.7.138 up
-ifconfig eth0:10.45.7.139 up
-ifconfig eth0:10.45.7.140 up
-ifconfig eth0:10.45.7.141 up
-ifconfig eth0:10.45.7.142 up
-ifconfig eth0:10.45.7.143 up
-ifconfig eth0:10.45.7.144 up
-ifconfig eth0:10.45.7.145 up
-ifconfig eth0:10.45.7.146 up
-ifconfig eth0:10.45.7.147 up
-ifconfig eth0:10.45.7.148 up
-ifconfig eth0:10.45.7.149 up
-ifconfig eth0:10.45.7.150 up
-ifconfig eth0:10.45.7.151 up
-ifconfig eth0:10.45.7.152 up
-ifconfig eth0:10.45.7.153 up
-ifconfig eth0:10.45.7.154 up
-ifconfig eth0:10.45.7.155 up
-ifconfig eth0:10.45.7.156 up
-ifconfig eth0:10.45.7.157 up
-ifconfig eth0:10.45.7.158 up
-ifconfig eth0:10.45.7.159 up
-ifconfig eth0:10.45.7.160 up
-ifconfig eth0:10.45.7.161 up
-ifconfig eth0:10.45.7.162 up
-ifconfig eth0:10.45.7.163 up
-ifconfig eth0:10.45.7.164 up
-ifconfig eth0:10.45.7.165 up
-ifconfig eth0:10.45.7.166 up
-ifconfig eth0:10.45.7.167 up
-ifconfig eth0:10.45.7.168 up
-ifconfig eth0:10.45.7.169 up
-ifconfig eth0:10.45.7.170 up
-ifconfig eth0:10.45.7.171 up
-ifconfig eth0:10.45.7.172 up
-ifconfig eth0:10.45.7.173 up
-ifconfig eth0:10.45.7.174 up
-ifconfig eth0:10.45.7.175 up
-ifconfig eth0:10.45.7.176 up
-ifconfig eth0:10.45.7.177 up
-ifconfig eth0:10.45.7.178 up
-ifconfig eth0:10.45.7.179 up
-ifconfig eth0:10.45.7.180 up
-ifconfig eth0:10.45.7.181 up
-ifconfig eth0:10.45.7.182 up
-ifconfig eth0:10.45.7.183 up
-ifconfig eth0:10.45.7.184 up
-ifconfig eth0:10.45.7.185 up
-ifconfig eth0:10.45.7.186 up
-ifconfig eth0:10.45.7.187 up
-ifconfig eth0:10.45.7.188 up
-ifconfig eth0:10.45.7.189 up
-ifconfig eth0:10.45.7.190 up
-ifconfig eth0:10.45.7.191 up
-ifconfig eth0:10.45.7.192 up
-ifconfig eth0:10.45.7.193 up
-ifconfig eth0:10.45.7.194 up
-ifconfig eth0:10.45.7.195 up
-ifconfig eth0:10.45.7.196 up
-ifconfig eth0:10.45.7.197 up
-ifconfig eth0:10.45.7.198 up
-ifconfig eth0:10.45.7.199 up
-ifconfig eth0:10.45.7.200 up
-ifconfig eth0:10.45.7.201 up
-ifconfig eth0:10.45.7.202 up
-ifconfig eth0:10.45.7.203 up
-ifconfig eth0:10.45.7.204 up
-ifconfig eth0:10.45.7.205 up
-ifconfig eth0:10.45.7.206 up
-ifconfig eth0:10.45.7.207 up
-ifconfig eth0:10.45.7.208 up
-ifconfig eth0:10.45.7.209 up
-ifconfig eth0:10.45.7.210 up
-ifconfig eth0:10.45.7.211 up
-ifconfig eth0:10.45.7.212 up
-ifconfig eth0:10.45.7.213 up
-ifconfig eth0:10.45.7.214 up
-ifconfig eth0:10.45.7.215 up
-ifconfig eth0:10.45.7.216 up
-ifconfig eth0:10.45.7.217 up
-ifconfig eth0:10.45.7.218 up
-ifconfig eth0:10.45.7.219 up
-ifconfig eth0:10.45.7.220 up
-ifconfig eth0:10.45.7.221 up
-ifconfig eth0:10.45.7.222 up
-ifconfig eth0:10.45.7.223 up
-ifconfig eth0:10.45.7.224 up
-ifconfig eth0:10.45.7.225 up
-ifconfig eth0:10.45.7.226 up
-ifconfig eth0:10.45.7.227 up
-ifconfig eth0:10.45.7.228 up
-ifconfig eth0:10.45.7.229 up
-ifconfig eth0:10.45.7.230 up
-ifconfig eth0:10.45.7.231 up
-ifconfig eth0:10.45.7.232 up
-ifconfig eth0:10.45.7.233 up
-ifconfig eth0:10.45.7.234 up
-ifconfig eth0:10.45.7.235 up
-ifconfig eth0:10.45.7.236 up
-ifconfig eth0:10.45.7.237 up
-ifconfig eth0:10.45.7.238 up
-ifconfig eth0:10.45.7.239 up
-ifconfig eth0:10.45.7.240 up
-ifconfig eth0:10.45.7.241 up
-ifconfig eth0:10.45.7.242 up
-ifconfig eth0:10.45.7.243 up
-ifconfig eth0:10.45.7.244 up
-ifconfig eth0:10.45.7.245 up
-ifconfig eth0:10.45.7.246 up
-ifconfig eth0:10.45.7.247 up
-ifconfig eth0:10.45.7.248 up
-ifconfig eth0:10.45.7.249 up
-ifconfig eth0:10.45.7.250 up
-ifconfig eth0:10.45.7.251 up
-ifconfig eth0:10.45.7.252 up
-ifconfig eth0:10.45.7.253 up
-ifconfig eth0:10.45.7.254 up
+ifconfig eth0:0 10.45.7.128 up
+ifconfig eth0:1 10.45.7.129 up
+ifconfig eth0:2 10.45.7.130 up
+ifconfig eth0:3 10.45.7.131 up
+ifconfig eth0:4 10.45.7.132 up
+ifconfig eth0:5 10.45.7.133 up
+ifconfig eth0:6 10.45.7.134 up
+ifconfig eth0:7 10.45.7.135 up
+ifconfig eth0:8 10.45.7.136 up
+ifconfig eth0:9 10.45.7.137 up
+ifconfig eth0:10 10.45.7.138 up
+ifconfig eth0:11 10.45.7.139 up
+ifconfig eth0:12 10.45.7.140 up
+ifconfig eth0:13 10.45.7.141 up
+ifconfig eth0:14 10.45.7.142 up
+ifconfig eth0:15 10.45.7.143 up
+ifconfig eth0:16 10.45.7.144 up
+ifconfig eth0:17 10.45.7.145 up
+ifconfig eth0:18 10.45.7.146 up
+ifconfig eth0:19 10.45.7.147 up
+ifconfig eth0:20 10.45.7.148 up
+ifconfig eth0:21 10.45.7.149 up
+ifconfig eth0:22 10.45.7.150 up
+ifconfig eth0:23 10.45.7.151 up
+ifconfig eth0:24 10.45.7.152 up
+ifconfig eth0:25 10.45.7.153 up
+ifconfig eth0:26 10.45.7.154 up
+ifconfig eth0:27 10.45.7.155 up
+ifconfig eth0:28 10.45.7.156 up
+ifconfig eth0:29 10.45.7.157 up
+ifconfig eth0:30 10.45.7.158 up
+ifconfig eth0:31 10.45.7.159 up
+ifconfig eth0:32 10.45.7.160 up
+ifconfig eth0:33 10.45.7.161 up
+ifconfig eth0:34 10.45.7.162 up
+ifconfig eth0:35 10.45.7.163 up
+ifconfig eth0:36 10.45.7.164 up
+ifconfig eth0:37 10.45.7.165 up
+ifconfig eth0:38 10.45.7.166 up
+ifconfig eth0:39 10.45.7.167 up
+ifconfig eth0:40 10.45.7.168 up
+ifconfig eth0:41 10.45.7.169 up
+ifconfig eth0:42 10.45.7.170 up
+ifconfig eth0:43 10.45.7.171 up
+ifconfig eth0:44 10.45.7.172 up
+ifconfig eth0:45 10.45.7.173 up
+ifconfig eth0:46 10.45.7.174 up
+ifconfig eth0:47 10.45.7.175 up
+ifconfig eth0:48 10.45.7.176 up
+ifconfig eth0:49 10.45.7.177 up
+ifconfig eth0:50 10.45.7.178 up
+ifconfig eth0:51 10.45.7.179 up
+ifconfig eth0:52 10.45.7.180 up
+ifconfig eth0:53 10.45.7.181 up
+ifconfig eth0:54 10.45.7.182 up
+ifconfig eth0:55 10.45.7.183 up
+ifconfig eth0:56 10.45.7.184 up
+ifconfig eth0:57 10.45.7.185 up
+ifconfig eth0:58 10.45.7.186 up
+ifconfig eth0:59 10.45.7.187 up
+ifconfig eth0:60 10.45.7.188 up
+ifconfig eth0:61 10.45.7.189 up
+ifconfig eth0:62 10.45.7.190 up
+ifconfig eth0:63 10.45.7.191 up
+ifconfig eth0:64 10.45.7.192 up
+ifconfig eth0:65 10.45.7.193 up
+ifconfig eth0:66 10.45.7.194 up
+ifconfig eth0:67 10.45.7.195 up
+ifconfig eth0:68 10.45.7.196 up
+ifconfig eth0:69 10.45.7.197 up
+ifconfig eth0:70 10.45.7.198 up
+ifconfig eth0:71 10.45.7.199 up
+ifconfig eth0:72 10.45.7.200 up
+ifconfig eth0:73 10.45.7.201 up
+ifconfig eth0:74 10.45.7.202 up
+ifconfig eth0:75 10.45.7.203 up
+ifconfig eth0:76 10.45.7.204 up
+ifconfig eth0:77 10.45.7.205 up
+ifconfig eth0:78 10.45.7.206 up
+ifconfig eth0:79 10.45.7.207 up
+ifconfig eth0:80 10.45.7.208 up
+ifconfig eth0:81 10.45.7.209 up
+ifconfig eth0:82 10.45.7.210 up
+ifconfig eth0:83 10.45.7.211 up
+ifconfig eth0:84 10.45.7.212 up
+ifconfig eth0:85 10.45.7.213 up
+ifconfig eth0:86 10.45.7.214 up
+ifconfig eth0:87 10.45.7.215 up
+ifconfig eth0:88 10.45.7.216 up
+ifconfig eth0:89 10.45.7.217 up
+ifconfig eth0:90 10.45.7.218 up
+ifconfig eth0:91 10.45.7.219 up
+ifconfig eth0:92 10.45.7.220 up
+ifconfig eth0:93 10.45.7.221 up
+ifconfig eth0:94 10.45.7.222 up
+ifconfig eth0:95 10.45.7.223 up
+ifconfig eth0:96 10.45.7.224 up
+ifconfig eth0:97 10.45.7.225 up
+ifconfig eth0:98 10.45.7.226 up
+ifconfig eth0:99 10.45.7.227 up
+ifconfig eth0:100 10.45.7.228 up
+ifconfig eth0:101 10.45.7.229 up
+ifconfig eth0:102 10.45.7.230 up
+ifconfig eth0:103 10.45.7.231 up
+ifconfig eth0:104 10.45.7.232 up
+ifconfig eth0:105 10.45.7.233 up
+ifconfig eth0:106 10.45.7.234 up
+ifconfig eth0:107 10.45.7.235 up
+ifconfig eth0:108 10.45.7.236 up
+ifconfig eth0:109 10.45.7.237 up
+ifconfig eth0:110 10.45.7.238 up
+ifconfig eth0:111 10.45.7.239 up
+ifconfig eth0:112 10.45.7.240 up
+ifconfig eth0:113 10.45.7.241 up
+ifconfig eth0:114 10.45.7.242 up
+ifconfig eth0:115 10.45.7.243 up
+ifconfig eth0:116 10.45.7.244 up
+ifconfig eth0:117 10.45.7.245 up
+ifconfig eth0:118 10.45.7.246 up
+ifconfig eth0:119 10.45.7.247 up
+ifconfig eth0:120 10.45.7.248 up
+ifconfig eth0:121 10.45.7.249 up
+ifconfig eth0:122 10.45.7.250 up
+ifconfig eth0:123 10.45.7.251 up
+ifconfig eth0:124 10.45.7.252 up
+ifconfig eth0:125 10.45.7.253 up
+ifconfig eth0:126 10.45.7.254 up
