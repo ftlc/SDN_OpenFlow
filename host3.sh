@@ -6,12 +6,13 @@ HOSTNAME=host3
 #Perform shared updates
 sh ./shared.sh $HOST host3
 
-scp ./host3/interfaces root@$HOST:/etc/network/interfaces
-
-ssh root@$HOST "/etc/init.d/networking restart"
+scp ./$HOSTNAME/aliases.sh root@$HOST:/home/cs4516/
+ssh root@$HOST "/home/cs4516/aliases.sh"
+sh ./host3/aliases.sh
 
 sh ./misc/setup_switch.sh $HOST
 
 #Setup Web Server
 sh ./misc/setup_server.sh $HOST $HOSTNAME
+
 
