@@ -21,7 +21,5 @@ ssh root@$HOST "/etc/init.d/networking restart"
 
 ssh root@$HOST "apt-get install python-dev ant maven build-essential openjdk-8-jdk unzip"
 
-scp host4/floodlight.zip cs4516@$HOST:~/
-ssh cs4516@$HOST "unzip floodlight.zip"
-
+sh ./host4/setup_flood.sh $HOST $HOSTNAME
 
