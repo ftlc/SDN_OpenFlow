@@ -11,7 +11,7 @@ sh ./shared.sh $HOST host2
 #ssh root@$HOST "/etc/init.d/networking restart"
 
 #Run script to setup DNS server on host2
-sh ./host2/dns/setup_dns.sh $HOST
+sh ./misc/setup_dns.sh $HOST
 
 #Setup OpenVSwitch
 sh ./misc/setup_switch.sh $HOST
