@@ -126,6 +126,12 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     //Hi son its me
 
     public boolean ruleinit(IOFSwitch sw, FloodlightContext cntx){
+	//TODO for phase 4
+	//set up forward anything 22 on all switches
+	//set up push any DNS to controller on switch 2
+	//set up forward? DNS on switch 1 and 3 (make sure it goes through 2)
+
+
         myFactory = sw.getOFFactory();
         if(myFactory == null) return false;
         myActions = myFactory.actions();
@@ -303,7 +309,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
             int thettl = getTTL(data);
 
             //add new flow to table
-
+//TODO For phase 4 we add 2 flows
 
 
 
