@@ -7,6 +7,7 @@ HOSTNAME=host3
 sh ./shared.sh $HOST host3
 
 scp ./$HOSTNAME/aliases.sh root@$HOST:/home/cs4516/
+ssh root@$HOST "chmod +x /home/cs4516/aliases.sh"
 ssh root@$HOST "/home/cs4516/aliases.sh"
 sh ./host3/aliases.sh
 

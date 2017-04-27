@@ -10,6 +10,7 @@ sh ./shared.sh $HOST host1
 #ssh root@$HOST "/etc/init.d/networking restart"
 
 scp ./$HOSTNAME/aliases.sh root@$HOST:/home/cs4516/
+ssh root@$HOST "chmod +x /home/cs4516/aliases.sh"
 ssh root@$HOST "/home/cs4516/aliases.sh"
 
 
