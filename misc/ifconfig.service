@@ -1,0 +1,10 @@
+[Unit]
+Description=fuck the switch up
+After=openvswitch-switch.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/cs4516/switchconfig.sh
+
+[Install]
+WantedBy=default.target
