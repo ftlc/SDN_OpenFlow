@@ -16,5 +16,15 @@ sh ./misc/setup_dns.sh $HOST
 #Setup OpenVSwitch
 sh ./misc/setup_switch.sh $HOST
 
+scp ./misc/switchifconfig1.sh root@$HOST:/home/cs4516/switchifconfig.sh
+
+ssh root@$HOST "chmod +x /home/cs4516/switchifconfig.sh"
+ssh root@$HOST "./home/cs4516/switchifconfig.sh"
+scp ./misc/ifconfig.service root@$HOST:/etc/systemd/system/ifconfig.service
+
+ssh root@$HOST "chmod 664 /etc/systemd/system/ifconfig.service"
+ssh root@$HOST "systemctl enable ifconfig.service"
+
+
 #Setup Web Server
 sh ./misc/setup_server.sh $HOST $HOSTNAME
