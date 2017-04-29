@@ -155,12 +155,12 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
         sw.write(flow1);
 
-                Match myMatch2 = myFactory.buildMatch()
-            .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-    .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
-    .setExact(MatchField.UDP_SRC, TransportPort.of(53))
-    .setExact(MatchField.IPV4_SRC, IPv4Address.of("10.45.7.2"))
-    .build();
+        Match myMatch2 = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+                .setExact(MatchField.IPV4_SRC, IPv4Address.of("10.45.7.2"))
+                .build();
         ArrayList<OFAction> list2 = new ArrayList<OFAction>();
         list2.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
         OFFlowAdd flow2 = myFactory.buildFlowAdd()
@@ -170,17 +170,17 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
                 .build();
         sw.write(flow2);
 
-	Match myMatch3 = myFactory.buildMatch()
-            .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-   .setMasked(MatchField.IPV4_DST, IPv4AddressWithMask.of("10.45.7.128/25"))
-    .build();
+        Match myMatch3 = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setMasked(MatchField.IPV4_DST, IPv4AddressWithMask.of("10.45.7.128/25"))
+                .build();
         ArrayList<OFAction> list3 = new ArrayList<OFAction>();
 //        list2.add(myActions.setDlSrc(MacAddress.of("DE:AD:BE:EF:CA:FE")
 //        list2.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
         OFFlowAdd flow3 = myFactory.buildFlowAdd()
                 .setMatch(myMatch3)
                 .setActions(list3)
-		        .setPriority(3)
+                .setPriority(3)
                 .build();
         sw.write(flow3);
 
@@ -199,22 +199,22 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
 
     public int getTTL(byte[] data){
-            int numq = (data[4]&0xFF) * 256 + (data[5]&0xFF); //big endian
+        int numq = (data[4]&0xFF) * 256 + (data[5]&0xFF); //big endian
 
-            int pos = 12;
-            //find the nully, end of the rule name
-            int i;
-            for(i = 0; i < numq; i++){
-                //alright we are at the start of a response (hopefully)
-                //find the end of the string
-                for(; data[pos] != 0x00 ; pos++);
-                pos+=4; //last 4 bytes
-            }
-
+        int pos = 12;
+        //find the nully, end of the rule name
+        int i;
+        for(i = 0; i < numq; i++){
             //alright we are at the start of a response (hopefully)
             //find the end of the string
             for(; data[pos] != 0x00 ; pos++);
             pos+=4; //last 4 bytes
+        }
+
+        //alright we are at the start of a response (hopefully)
+        //find the end of the string
+        for(; data[pos] != 0x00 ; pos++);
+        pos+=4; //last 4 bytes
 
         //WE ARE AT THE TTL BOOOYS
         int ttl = data[pos];
@@ -357,21 +357,23 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
                 .setExact(MatchField.TCP_DST, TransportPort.of(22))
                 .build();
 
 
         Match myMatchBack = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
                 .setExact(MatchField.TCP_SRC, TransportPort.of(22))
                 .build();
 
         installFlowMod(myMatch, 10000000, sw);
         installFlowMod(myMatchBack, 10000000, sw);
 
-       // HashMap<MatchField, Object> matches = new HashMap<>();
-       // matches.put(MatchField.ETH_TYPE, EthType.IPv4);
-       // myMatch = CS4516.buildMatch(matches, myFactory);
+        // HashMap<MatchField, Object> matches = new HashMap<>();
+        // matches.put(MatchField.ETH_TYPE, EthType.IPv4);
+        // myMatch = CS4516.buildMatch(matches, myFactory);
 
     }
 
