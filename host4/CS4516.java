@@ -365,7 +365,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         Match myMatchBack = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
-                .setExact(MatchField.TCP_SRC, TransportPort.of(22))
+            //    .setExact(MatchField.TCP_SRC, TransportPort.of(22))
                 .build();
 
         installFlowMod(myMatch, 10000000, sw);
