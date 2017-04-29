@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 HOST=10.45.7.3
 HOSTNAME=host3
 
 #Perform shared updates
-sh ./shared.sh $HOST host3
+bash ./shared.sh $HOST host3
 
 scp ./$HOSTNAME/aliases.sh root@$HOST:/home/cs4516/
 ssh root@$HOST "chmod +x /home/cs4516/aliases.sh"

@@ -4,7 +4,7 @@ After=openvswitch-switch.target
 
 [Service]
 Type=oneshot
-ExecStart=/home/cs4516/switchconfig.sh
+ExecStart=/home/cs4516/switchifconfig.sh
 
 [Install]
 WantedBy=default.target
