@@ -29,8 +29,6 @@ import net.floodlightcontroller.packet.*;
 import org.projectfloodlight.openflow.protocol.*;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
 import org.projectfloodlight.openflow.protocol.action.OFActions;
-import org.projectfloodlight.openflow.protocol.actionid.OFActionIdPushMpls;
-import org.projectfloodlight.openflow.protocol.instruction.OFInstruction;
 import org.projectfloodlight.openflow.protocol.instruction.OFInstructions;
 import org.projectfloodlight.openflow.protocol.match.Match;
 import org.projectfloodlight.openflow.protocol.match.MatchField;
@@ -41,10 +39,6 @@ import net.floodlightcontroller.core.module.FloodlightModuleException;
 import net.floodlightcontroller.core.module.IFloodlightModule;
 import net.floodlightcontroller.core.module.IFloodlightService;
 
-
-
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.regex.Pattern;
 
 import net.floodlightcontroller.packet.Ethernet;
 import org.slf4j.Logger;
@@ -108,6 +102,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     @Override
     public void init(FloodlightModuleContext context)
             throws FloodlightModuleException {
+
 
 	floodlightProvider = context.getServiceImpl(IFloodlightProviderService.class);
 //	System.out.printf("Got dat BIZZIE \n\n\n\n\n\n\n BIZZZIE \n\nb\n\n\n\n\n\n");
@@ -189,9 +184,10 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
                 .build();
         sw.write(flow3);
 
-
         return true;
     }
+
+
 
     public int indexOf(byte[] in, byte[] pattern){
         int i =0, j=0;
@@ -245,8 +241,22 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
 
     }
+
+    ArrayList<IOFSwitch> switches = new ArrayList<>();
+
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
+
+        //FIRST
+        //check if the sw is already in the table of switches
+        //if not, add it and SET ITS FLOWS UP
+        //flows for 1 and 3, allow everything 22
+        //flows for 2, allow everything 22, forward DNS to controller
+
+        if(!switches.contains(sw)){
+            allowSSH(sw);
+            switches.add(sw);
+        }
 
 //	System.out.printf("Got dat\n");
         if(msg.getType() == OFType.PACKET_IN) {
@@ -310,25 +320,91 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
             //add new flow to table
 //TODO For phase 4 we add 2 flows
+            //look the switches up in the table
 
 
+            addPath(newsc, newds, thettl, sw);
 
-            Match myMatch = myFactory.buildMatch()
-                    .setExact(MatchField.ETH_TYPE, EthType.IPv4)
-                    .setExact(MatchField.IPV4_SRC, newsc)
-                    .setExact(MatchField.IPV4_DST, newds)
-                    .build();
-            ArrayList<OFAction> list = new ArrayList<OFAction>();
-            list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
-            OFFlowAdd flow = myFactory.buildFlowAdd()
-                    .setMatch(myMatch)
-                    .setActions(list)
-                    .setHardTimeout(thettl)
-            		.setPriority(5)
-                    .build();
-            sw.write(flow);
+            OFPacketOut po = buildPacket(data, p, ipv4, eth, sw);
+            sw.write(po);
         }
         return Command.CONTINUE;
     }
 
+
+    OFPacketOut buildPacket(byte [] data, UDP p, IPv4 ipv4, Ethernet eth, IOFSwitch sw){
+        Data k = new Data(data);
+        p.setPayload(k);
+
+        p.resetChecksum();
+        ipv4.setPayload(p);
+        eth.setPayload(ipv4);
+        OFPacketOut po = sw.getOFFactory().buildPacketOut().setData(eth.serialize())
+                .setActions(Collections.singletonList((OFAction) sw.getOFFactory().actions().output(OFPort.NORMAL, 1)))
+                .setInPort(OFPort.CONTROLLER).build();
+        return po;
+    }
+
+    void addPath(IPv4Address source_ip, IPv4Address dest_ip, int thettl, IOFSwitch sw) {
+        Match myMatch = makeMatch(source_ip, dest_ip);
+        Match myMatchBack = makeMatch(dest_ip, source_ip);
+
+        installFlowMod(myMatch, thettl, sw);
+        installFlowMod(myMatchBack, thettl, sw);
+    }
+
+    void allowSSH(IOFSwitch sw){
+
+        Match myMatch = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.TCP_DST, TransportPort.of(22))
+                .build();
+
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.TCP_SRC, TransportPort.of(22))
+                .build();
+
+        installFlowMod(myMatch, 10000000, sw);
+        installFlowMod(myMatchBack, 10000000, sw);
+
+       // HashMap<MatchField, Object> matches = new HashMap<>();
+       // matches.put(MatchField.ETH_TYPE, EthType.IPv4);
+       // myMatch = CS4516.buildMatch(matches, myFactory);
+
+    }
+
+
+    static <F extends OFValueType<F>> Match buildMatchTEST(HashMap<MatchField<F>, F> matches, OFFactory myFactory){
+        Match.Builder b = myFactory.buildMatch();
+
+        for(MatchField<F> k : matches.keySet()){
+            b.setExact(k, matches.get(k));
+        }
+        return b.build();
+
+    }
+
+    Match makeMatch(IPv4Address source_ip, IPv4Address dest_ip){
+        Match myMatch = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IPV4_SRC, source_ip)
+                .setExact(MatchField.IPV4_DST, dest_ip)
+                .build();
+
+        return myMatch;
+    }
+
+    void installFlowMod(Match myMatch, int thettl, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setHardTimeout(thettl)
+                .setPriority(5)
+                .build();
+        sw.write(flow);
+    }
 }
