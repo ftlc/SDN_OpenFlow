@@ -337,64 +337,14 @@ public class CS4516Test extends FloodlightTestCase {
 
 
 
-    enum DestDeviceToLearn { NONE, DEVICE1 ,DEVICE2 };
-    public void learnDevices(DestDeviceToLearn destDeviceToLearn) {
-        // Build src and dest devices
-        MacAddress dataLayerSource = ((Ethernet)testPacket).getSourceMACAddress();
-        MacAddress dataLayerDest =
-                ((Ethernet)testPacket).getDestinationMACAddress();
-        IPv4Address networkSource =
-                ((IPv4)((Ethernet)testPacket).getPayload()).
-                        getSourceAddress();
-        IPv4Address networkDest =
-                ((IPv4)((Ethernet)testPacket).getPayload()).
-                        getDestinationAddress();
 
-        reset(topology);
-        expect(topology.isAttachmentPointPort(DatapathId.of(1L), OFPort.of(1)))
-                .andReturn(true)
-                .anyTimes();
-        expect(topology.isAttachmentPointPort(DatapathId.of(2L), OFPort.of(3)))
-                .andReturn(true)
-                .anyTimes();
-        expect(topology.isAttachmentPointPort(DatapathId.of(1L), OFPort.of(3)))
-                .andReturn(true)
-                .anyTimes();
-        replay(topology);
-
-        srcDevice =
-                deviceManager.learnEntity(dataLayerSource, VlanVid.ZERO,
-                        networkSource, IPv6Address.NONE,
-                        DatapathId.of(1), OFPort.of(1));
-        IDeviceService.fcStore. put(cntx,
-                IDeviceService.CONTEXT_SRC_DEVICE,
-                srcDevice);
-        if (destDeviceToLearn == DestDeviceToLearn.DEVICE1) {
-            dstDevice1 =
-                    deviceManager.learnEntity(dataLayerDest, VlanVid.ZERO,
-                            networkDest, IPv6Address.NONE,
-                            DatapathId.of(2), OFPort.of(3));
-            IDeviceService.fcStore.put(cntx,
-                    IDeviceService.CONTEXT_DST_DEVICE,
-                    dstDevice1);
+    @Test
+    public void sshTest(){
+        if(cs4516.ruleinit(sw1, cntx)) {
+            cs4516.makeMatch(IPv4Address.of("10.45.7.2"), IPv4Address.of("10.45.7.2"));
+            cs4516.allowSSH(sw1);
         }
-        if (destDeviceToLearn == DestDeviceToLearn.DEVICE2) {
-            dstDevice2 =
-                    deviceManager.learnEntity(dataLayerDest, VlanVid.ZERO,
-                            networkDest, IPv6Address.NONE,
-                            DatapathId.of(1), OFPort.of(3));
-            IDeviceService.fcStore.put(cntx,
-                    IDeviceService.CONTEXT_DST_DEVICE,
-                    dstDevice2);
-        }
-        verify(topology);
-
-        IFloodlightProviderService.bcStore.
-                put(cntx,
-                        IFloodlightProviderService.CONTEXT_PI_PAYLOAD,
-                        (Ethernet)testPacket);
     }
-
     @Test
     public void indexOfTest() {
         //byte[] pattern = []

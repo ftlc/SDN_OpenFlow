@@ -253,10 +253,6 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         //flows for 1 and 3, allow everything 22
         //flows for 2, allow everything 22, forward DNS to controller
 
-        if(!switches.contains(sw)){
-            allowSSH(sw);
-            switches.add(sw);
-        }
 
 //	System.out.printf("Got dat\n");
         if(msg.getType() == OFType.PACKET_IN) {
@@ -265,6 +261,10 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
                 hasrec = ruleinit(sw, cntx);
             Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
 
+            if(!switches.contains(sw)){
+                allowSSH(sw);
+                switches.add(sw);
+            }
             MacAddress srcMac = eth.getSourceMACAddress();
             MacAddress dstMac = eth.getDestinationMACAddress();
 
@@ -353,7 +353,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         installFlowMod(myMatchBack, thettl, sw);
     }
 
-    void allowSSH(IOFSwitch sw){
+    public void allowSSH(IOFSwitch sw){
 
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
@@ -388,7 +388,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     }
 
-    Match makeMatch(IPv4Address source_ip, IPv4Address dest_ip){
+    public Match makeMatch(IPv4Address source_ip, IPv4Address dest_ip){
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IPV4_SRC, source_ip)
