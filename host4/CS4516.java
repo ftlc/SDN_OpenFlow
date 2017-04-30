@@ -53,10 +53,11 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
 
 
-    OFFactory myFactory = null;
-    OFActions myActions = null;
-    OFInstructions myInstructions = null;
+//    OFFactory myFactory = null;
+//    OFActions myActions = null;
+//    OFInstructions myInstructions = null;
 	int robin = 0; //round robin bintch
+
 
     boolean hasrec = false;
 
