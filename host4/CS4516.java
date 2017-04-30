@@ -24,7 +24,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.*;
 
+import com.sun.corba.se.spi.ior.IORFactory;
 import net.floodlightcontroller.core.*;
+import net.floodlightcontroller.core.internal.OFSwitch;
 import net.floodlightcontroller.packet.*;
 import org.projectfloodlight.openflow.protocol.*;
 import org.projectfloodlight.openflow.protocol.action.OFAction;
@@ -56,8 +58,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 //    OFFactory myFactory = null;
 //    OFActions myActions = null;
 //    OFInstructions myInstructions = null;
-	int robin = 0; //round robin bintch
-
+	int robin3 = 0; //round robin bintch
+    int robin1 = 0;
 
     boolean hasrec = false;
 
@@ -245,7 +247,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     }
 
-    ArrayList<IOFSwitch> switches = new ArrayList<>();
+    //ArrayList<IOFSwitch> switches = new ArrayList<>();
+    HashMap<String, IOFSwitch> switches = new HashMap<String, IOFSwitch>();
 
     @Override
     public Command receive(IOFSwitch sw, OFMessage msg, FloodlightContext cntx) {
@@ -263,14 +266,17 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 //            if(!hasrec)
 //                hasrec = ruleinit(sw, cntx);
 
-            if(!switches.contains(sw)){
+
+            if(!switches.containsValue(sw)){
                 allowSSH(sw);
-                switches.add(sw);
-		allowSSH(sw);
-		allowTCP8080(sw);
-		//check if its switch2
-		if(false)  allowUDP53OneWayForSwitch2(sw);
-		else  allowUDP53(sw);
+                //switches.add(sw);
+                switches.put(sw.getInetAddress().toString(), sw);
+                System.out.println("DEBUG NUG IN A FUGGGGGGGGG XD" + sw.getInetAddress().toString());
+		        allowSSH(sw);
+		        allowTCP8080(sw);
+		        //check if its switch2
+		        if(false)  allowUDP53OneWayForSwitch2(sw);
+		        else allowUDP53(sw);
             }
 
             Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
@@ -306,18 +312,28 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
 
 
-            robin++;
-            if(robin > 254 || robin < 129) robin =129;
-            IPv4Address newsc = dstIP;
-            IPv4Address newds = IPv4Address.of("10.45.7." + robin);
+            robin3++;
+            robin1++;
+            if(robin3 > 254 || robin3 < 129) robin3 =129;
+            if(robin1 > 64 || robin1 < 48) robin1 =48;
+            //IPv4Address newsc = dstIP;
+            //IPv4Address newds = IPv4Address.of("10.45.7." + robin3);
 
-            byte[] newIP = IPtoByte("10.45.7." + robin);
+            byte[] newIP = IPtoByte("10.45.7." + robin3);
             byte[] oldIP = IPtoByte("10.45.7.3");
             //assume we can parse it
             int index = indexOf(data, oldIP);
 
+
+            if(index == -1 ){
+                //try again
+                newIP = IPtoByte("10.45.7." + robin1);
+                oldIP = IPtoByte("10.45.7.1");
+                //assume we can parse it
+                index = indexOf(data, oldIP);
+            }
             System.out.println("Address "+srcIP +" was at " + index);
-            if(index == -1 ) return Command.CONTINUE;
+            if(index == -1 )return Command.CONTINUE;
             //assume we can edit it
             data[index] = newIP[0];
             data[index] = newIP[1];
@@ -334,7 +350,16 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 		//TODO REDO THIS
 		//add path to switch 1
 		//add path to switch 2
-            addPath(newsc, newds, thettl, sw);
+
+            IOFSwitch sw1 = switches.get("10.45.7.1");
+            IOFSwitch sw3 = switches.get("10.45.7.3");
+            if(sw1 != null){
+                addPath(IPv4Address.of("10.45.7." + robin1), IPv4Address.of("10.45.7." + robin3), IPv4Address.of("10.45.7.1"), thettl, sw1);
+            }
+            if(sw3 != null){
+                addPath(IPv4Address.of("10.45.7." + robin3), IPv4Address.of("10.45.7." + robin1), IPv4Address.of("10.45.7.3"), thettl, sw1);
+            }
+
 
             OFPacketOut po = buildPacket(data, p, ipv4, eth, sw);
             sw.write(po);
@@ -356,16 +381,38 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         return po;
     }
 
-    void addPath(IPv4Address source_ip, IPv4Address dest_ip, int thettl, IOFSwitch sw) {
-        Match myMatch = makeMatch(source_ip, dest_ip);
-        Match myMatchBack = makeMatch(dest_ip, source_ip);
+    void addPath(IPv4Address source_ip, IPv4Address dest_ip, IPv4Address orig_ip, int thettl, IOFSwitch sw) {
+        OFFactory myFactory = sw.getOFFactory();
 
-        installFlowMod(myMatch, thettl, sw);
-        installFlowMod(myMatchBack, thettl, sw);
+        Match myMatch = makeMatch(orig_ip, dest_ip, sw);
+
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        OFActions myActions = myFactory.actions();
+        list.add(myActions.buildSetNwDst().setNwAddr(source_ip).build());
+        list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setPriority(6)
+                .build();
+        sw.write(flow);
+
+
+        Match myMatchBack = makeMatch(dest_ip, source_ip, sw);
+
+        ArrayList<OFAction> list2 = new ArrayList<OFAction>();
+        list.add(myActions.buildSetNwDst().setNwAddr(orig_ip).build());
+        list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
+        OFFlowAdd flow2 = myFactory.buildFlowAdd()
+                .setMatch(myMatchBack)
+                .setActions(list2)
+                .setPriority(6)
+                .build();
+        sw.write(flow2);
     }
 
     public void allowSSH(IOFSwitch sw){
-
+        OFFactory myFactory = sw.getOFFactory();
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
@@ -390,7 +437,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     //TCP 8080
     public void allowTCP8080(IOFSwitch sw){
-
+        OFFactory myFactory = sw.getOFFactory();
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
@@ -409,7 +456,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     }
 
     public void allowUDP53(IOFSwitch sw){
-
+        OFFactory myFactory = sw.getOFFactory();
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
@@ -428,13 +475,13 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     }
 
     public void allowUDP53OneWayForSwitch2(IOFSwitch sw){
-
+        OFFactory myFactory = sw.getOFFactory();
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
                 .setExact(MatchField.UDP_SRC, TransportPort.of(53))
                 .build();
-	installControlMod(myMatch, sw);
+    	installControlMod(myMatch, sw);
 
 
         Match myMatchBack = myFactory.buildMatch()
@@ -456,7 +503,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     }
 
-    public Match makeMatch(IPv4Address source_ip, IPv4Address dest_ip){
+    public Match makeMatch(IPv4Address source_ip, IPv4Address dest_ip, IOFSwitch sw){
+        OFFactory myFactory = sw.getOFFactory();
         Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IPV4_SRC, source_ip)
@@ -468,6 +516,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     void installFlowMod(Match myMatch, int thettl, IOFSwitch sw) {
         ArrayList<OFAction> list = new ArrayList<OFAction>();
+        OFFactory myFactory = sw.getOFFactory();
+        OFActions myActions = myFactory.actions();
         list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
         OFFlowAdd flow = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
@@ -479,6 +529,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     }
     void installFlowMod(Match myMatch, IOFSwitch sw) {
         ArrayList<OFAction> list = new ArrayList<OFAction>();
+        OFFactory myFactory = sw.getOFFactory();
+        OFActions myActions = myFactory.actions();
         list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
         OFFlowAdd flow = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
@@ -489,6 +541,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     }
     void installControlMod(Match myMatch, int thettl, IOFSwitch sw) {
         ArrayList<OFAction> list = new ArrayList<OFAction>();
+        OFFactory myFactory = sw.getOFFactory();
+        OFActions myActions = myFactory.actions();
         list.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
         OFFlowAdd flow = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
@@ -500,6 +554,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     }
     void installControlMod(Match myMatch, IOFSwitch sw) {
         ArrayList<OFAction> list = new ArrayList<OFAction>();
+        OFFactory myFactory = sw.getOFFactory();
+        OFActions myActions = myFactory.actions();
         list.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
         OFFlowAdd flow = myFactory.buildFlowAdd()
                 .setMatch(myMatch)
