@@ -120,6 +120,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
     //
     //Hi son its me
 
+/*
+
     public boolean ruleinit(IOFSwitch sw, FloodlightContext cntx){
 	//TODO for phase 4
 	//set up forward anything 22 on all switches
@@ -186,7 +188,7 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
         return true;
     }
-
+*/
 
 
     public int indexOf(byte[] in, byte[] pattern){
@@ -257,14 +259,20 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 //	System.out.printf("Got dat\n");
         if(msg.getType() == OFType.PACKET_IN) {
 
-            if(!hasrec)
-                hasrec = ruleinit(sw, cntx);
-            Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
+//            if(!hasrec)
+//                hasrec = ruleinit(sw, cntx);
 
             if(!switches.contains(sw)){
                 allowSSH(sw);
                 switches.add(sw);
+		allowSSH(sw);
+		allowTCP8080(sw);
+		//check if its switch2
+		if(false)  allowUDP53OneWayForSwitch2(sw);
+		else  allowUDP53(sw);
             }
+
+            Ethernet eth = IFloodlightProviderService.bcStore.get(cntx, IFloodlightProviderService.CONTEXT_PI_PAYLOAD);
             MacAddress srcMac = eth.getSourceMACAddress();
             MacAddress dstMac = eth.getDestinationMACAddress();
 
