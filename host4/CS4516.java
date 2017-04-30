@@ -365,11 +365,11 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         Match myMatchBack = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
-            //    .setExact(MatchField.TCP_SRC, TransportPort.of(22))
+                .setExact(MatchField.TCP_SRC, TransportPort.of(22))
                 .build();
 
-        installFlowMod(myMatch, 10000000, sw);
-        installFlowMod(myMatchBack, 10000000, sw);
+        installFlowMod(myMatch, sw);
+        installFlowMod(myMatchBack, sw);
 
         // HashMap<MatchField, Object> matches = new HashMap<>();
         // matches.put(MatchField.ETH_TYPE, EthType.IPv4);
@@ -377,6 +377,55 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     }
 
+    //TCP 8080
+    public void allowTCP8080(IOFSwitch sw){
+
+        Match myMatch = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
+                .setExact(MatchField.TCP_DST, TransportPort.of(8080))
+                .build();
+
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
+                .setExact(MatchField.TCP_SRC, TransportPort.of(8080))
+                .build();
+
+        installFlowMod(myMatch, sw);
+        installFlowMod(myMatchBack, sw);
+    }
+
+    public void allowUDP53(IOFSwitch sw){
+
+        Match myMatch = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_DST, TransportPort.of(53))
+                .build();
+
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+                .build();
+
+        installFlowMod(myMatch, sw);
+        installFlowMod(myMatchBack, sw);
+    }
+
+    public void allowUDP53OneWayForSwitch2(IOFSwitch sw){
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+                .build();
+
+        installFlowMod(myMatchBack, sw);
+    }
 
     static <F extends OFValueType<F>> Match buildMatchTEST(HashMap<MatchField<F>, F> matches, OFFactory myFactory){
         Match.Builder b = myFactory.buildMatch();
@@ -406,6 +455,37 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
                 .setActions(list)
                 .setHardTimeout(thettl)
                 .setPriority(5)
+                .build();
+        sw.write(flow);
+    }
+    void installFlowMod(Match myMatch, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setPriority(5)
+                .build();
+        sw.write(flow);
+    }
+    void installControlMod(Match myMatch, int thettl, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setHardTimeout(thettl)
+                .setPriority(6)
+                .build();
+        sw.write(flow);
+    }
+    void installControlMod(Match myMatch, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setPriority(6)
                 .build();
         sw.write(flow);
     }
