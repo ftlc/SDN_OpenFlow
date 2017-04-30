@@ -418,10 +418,18 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 
     public void allowUDP53OneWayForSwitch2(IOFSwitch sw){
 
-        Match myMatchBack = myFactory.buildMatch()
+        Match myMatch = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
                 .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+                .build();
+	installControlMod(myMatch, sw);
+
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_DST, TransportPort.of(53))
                 .build();
 
         installFlowMod(myMatchBack, sw);
