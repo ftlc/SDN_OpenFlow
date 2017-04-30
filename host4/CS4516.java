@@ -330,7 +330,9 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
 //TODO For phase 4 we add 2 flows
             //look the switches up in the table
 
-
+		//TODO REDO THIS
+		//add path to switch 1
+		//add path to switch 2
             addPath(newsc, newds, thettl, sw);
 
             OFPacketOut po = buildPacket(data, p, ipv4, eth, sw);
