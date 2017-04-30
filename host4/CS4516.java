@@ -365,16 +365,36 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         Match myMatchBack = myFactory.buildMatch()
                 .setExact(MatchField.ETH_TYPE, EthType.IPv4)
                 .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
-            //    .setExact(MatchField.TCP_SRC, TransportPort.of(22))
+                .setExact(MatchField.TCP_SRC, TransportPort.of(22))
                 .build();
 
-        installFlowMod(myMatch, 10000000, sw);
-        installFlowMod(myMatchBack, 10000000, sw);
+        installFlowMod(myMatch, sw);
+        installFlowMod(myMatchBack, sw);
 
         // HashMap<MatchField, Object> matches = new HashMap<>();
         // matches.put(MatchField.ETH_TYPE, EthType.IPv4);
         // myMatch = CS4516.buildMatch(matches, myFactory);
 
+    }
+
+    //TCP 8080
+    public void allowTCP8080(IOFSwitch sw){
+
+        Match myMatch = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
+                .setExact(MatchField.TCP_DST, TransportPort.of(8080))
+                .build();
+
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.TCP)
+                .setExact(MatchField.TCP_SRC, TransportPort.of(8080))
+                .build();
+
+        installFlowMod(myMatch, sw);
+        installFlowMod(myMatchBack, sw);
     }
 
 
@@ -406,6 +426,37 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
                 .setActions(list)
                 .setHardTimeout(thettl)
                 .setPriority(5)
+                .build();
+        sw.write(flow);
+    }
+    void installFlowMod(Match myMatch, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.NORMAL).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setPriority(5)
+                .build();
+        sw.write(flow);
+    }
+    void installControlMod(Match myMatch, int thettl, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setHardTimeout(thettl)
+                .setPriority(6)
+                .build();
+        sw.write(flow);
+    }
+    void installControlMod(Match myMatch, IOFSwitch sw) {
+        ArrayList<OFAction> list = new ArrayList<OFAction>();
+        list.add(myActions.buildOutput().setPort(OFPort.CONTROLLER).build());
+        OFFlowAdd flow = myFactory.buildFlowAdd()
+                .setMatch(myMatch)
+                .setActions(list)
+                .setPriority(6)
                 .build();
         sw.write(flow);
     }
