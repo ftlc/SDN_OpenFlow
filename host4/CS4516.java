@@ -397,6 +397,35 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
         installFlowMod(myMatchBack, sw);
     }
 
+    public void allowUDP53(IOFSwitch sw){
+
+        Match myMatch = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_DST, TransportPort.of(53))
+                .build();
+
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+                .build();
+
+        installFlowMod(myMatch, sw);
+        installFlowMod(myMatchBack, sw);
+    }
+
+    public void allowUDP53OneWayForSwitch2(IOFSwitch sw){
+
+        Match myMatchBack = myFactory.buildMatch()
+                .setExact(MatchField.ETH_TYPE, EthType.IPv4)
+                .setExact(MatchField.IP_PROTO, IpProtocol.UDP)
+                .setExact(MatchField.UDP_SRC, TransportPort.of(53))
+                .build();
+
+        installFlowMod(myMatchBack, sw);
+    }
 
     static <F extends OFValueType<F>> Match buildMatchTEST(HashMap<MatchField<F>, F> matches, OFFactory myFactory){
         Match.Builder b = myFactory.buildMatch();
