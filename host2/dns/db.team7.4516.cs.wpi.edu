@@ -1,7 +1,7 @@
 ;
 ; BIND data file for local loopback interface
 ;
-$TTL	604800
+$TTL	2
 @	IN	SOA	ns1.team7.4516.cs.wpi.edu. admin.team7.4516.cs.wpi.edu (
 			      3		; Serial
 			 604800		; Refresh

@@ -340,10 +340,8 @@ public class CS4516Test extends FloodlightTestCase {
 
     @Test
     public void sshTest(){
-        if(cs4516.ruleinit(sw1, cntx)) {
-            cs4516.makeMatch(IPv4Address.of("10.45.7.2"), IPv4Address.of("10.45.7.2"));
-            cs4516.allowSSH(sw1);
-        }
+        System.out.println(sw2.getInetAddress().toString());
+        System.out.println(sw1.getInetAddress().toString());
     }
     @Test
     public void indexOfTest() {
