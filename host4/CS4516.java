@@ -270,8 +270,8 @@ public class CS4516 implements IOFMessageListener, IFloodlightModule {
             if(!switches.containsValue(sw)){
                 allowSSH(sw);
                 //switches.add(sw);
-                switches.put(sw.getInetAddress().toString(), sw);
-                System.out.println("DEBUG NUG IN A FUGGGGGGGGG XD" + sw.getInetAddress().toString());
+                switches.put(sw.getInetAddress().toString().split(":")[0], sw);
+                System.out.println("DEBUG NUG IN A FUGGGGGGGGG XD" + sw.getInetAddress().toString().split(":")[0]);
 		        allowSSH(sw);
 		        allowTCP8080(sw);
 		        //check if its switch2
