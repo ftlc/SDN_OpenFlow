@@ -43,3 +43,9 @@ When the controller gets a forwarded DNS response packet from the .2 switch, it 
 
 
 Now, the .1 and .3 switches will forward most packets as long as they have a NAT rule, but first applying the translation.
+
+
+
+
+
+Our packet captures for Phase 3 and Phase 4 can be found under phase3.pcap and phase4.pcap
