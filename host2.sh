@@ -20,11 +20,11 @@ scp ./misc/switchifconfig2.sh root@$HOST:/home/cs4516/switchifconfig.sh
 
 ssh root@$HOST "chmod +x /home/cs4516/switchifconfig.sh"
 ssh root@$HOST "/home/cs4516/switchifconfig.sh"
-scp ./misc/ifconfig.service root@$HOST:/etc/systemd/system/fuckfig.service
+#scp ./misc/ifconfig.service root@$HOST:/etc/systemd/system/fuckfig.service
 
-ssh root@$HOST "chmod 664 /etc/systemd/system/fuckfig.service"
-ssh root@$HOST "systemctl daemon-reload"
-ssh root@$HOST "systemctl enable fuckfig.service"
+#ssh root@$HOST "chmod 664 /etc/systemd/system/fuckfig.service"
+#ssh root@$HOST "systemctl daemon-reload"
+#ssh root@$HOST "systemctl enable fuckfig.service"
 
 
 #Setup Web Server
