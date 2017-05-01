@@ -29,4 +29,17 @@ We have set up 3 switches, one on .1, one on .2, and one on .3
 .1 and .3 are set up the same. In the initial state, they only forward DNS and SSH traffic, and drop everything else.
 
 
-When the controller gets a DNS
+When the controller gets a forwarded DNS response packet from the .2 switch, it does a number of things.
+	Generate NAT IP addresses for both .1 and .3
+		Round robin.
+	Generate NAT rules for the two switches.
+		Send them to the .1 and .3 switches.
+	Change the DNS packet:
+		Change the .3 or .1 result found in the DNS packet to be the NAT ip address it just generated.
+		Find the timestamp.
+	Forward the DNS packet.
+		Re-generate the UDP packet checksum
+		Send back to controller.
+
+
+Now, the .1 and .3 switches will forward most packets as long as they have a NAT rule, but first applying the translation.
